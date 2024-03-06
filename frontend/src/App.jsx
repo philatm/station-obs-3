@@ -1,35 +1,101 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from "react";
+import Plot from "react-plotly.js";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const ws = useRef();
+  const [data, setData] = useState([]);
 
+  const [xTimeSeries, setXTimeSeries] = useState([]);
+  const [yValues, setYValues] = useState([]);
+  const [settings, updateSettings] = useState({
+    data: [
+      {
+        x: { xTimeSeries },
+        y: { yValues },
+        type: "scatter",
+        mode: "markers",
+        marker: { color: "red" },
+      },
+    ],
+    layout: {
+      width: 1280,
+      height: 960,
+      title: "A Fancy Plot",
+    },
+    frames: [],
+    config: { scrollZoom: true },
+  });
+
+  useEffect(() => {
+    //Send request to our websocket server using the "/request" path
+    ws.current = new WebSocket("ws://localhost:8080/request");
+    ws.current.onmessage = (ev) => {
+      const message = JSON.parse(ev.data);
+      console.log(`Received message :: ${message.sensorData}`);
+      // Upon receiving websocket message then add it to the list of data that we are displaying
+      let newDataArray = [
+        ...data,
+        {
+          id: message.date,
+          sensorData: message.sensorData,
+        },
+      ];
+      console.log(newDataArray);
+
+      setData((currentData) => limitData(currentData, message));
+      update(message);
+    };
+    ws.current.onclose = (ev) => {
+      console.log("Client socket close!");
+    };
+
+    function update(message) {
+      setXTimeSeries((xTimeSeries) => [...xTimeSeries, message.date]);
+      setYValues((yValues) => [...yValues, message.sensorData[0]]);
+    }
+
+    //We limit the number of reads to the last 24 reading and drop the last read
+    function limitData(currentData, message) {
+      // if (currentData.length > 24) {
+      //   console.log("Limit reached, dropping first record!");
+      //   currentData.shift();
+      // }
+      return [
+        ...currentData,
+        {
+          id: message.date,
+          sensorData: message.sensorData,
+        },
+      ];
+    }
+
+    return () => {
+      console.log("Cleaning up! ");
+      ws.current.close();
+    };
+  }, []);
+
+  // function update() {
+  //   setXTimeSeries((xTimeSeries) => [...xTimeSeries, Date.now()]);
+  //   setYValues((yValues) => [...yValues, Math.random()]);
+  // }
+  // setTimeout(update, 1000);
+
+  useEffect(() => {
+    updateSettings((settings) => ({
+      ...settings,
+      data: [{ ...settings.data[0], x: xTimeSeries, y: yValues }],
+    }));
+  }, [xTimeSeries]);
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="plot_div">
+      <Plot
+        data={settings.data}
+        layout={settings.layout}
+        config={settings.config}
+      />
+    </div>
+  );
 }
 
-export default App
+export default App;
