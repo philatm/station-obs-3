@@ -18,8 +18,8 @@ function App() {
       },
     ],
     layout: {
-      width: 1280,
-      height: 960,
+      width: 720,
+      height: 480,
       title: "A Fancy Plot",
     },
     frames: [],
@@ -31,27 +31,20 @@ function App() {
     ws.current = new WebSocket("ws://localhost:8080/request");
     ws.current.onmessage = (ev) => {
       const message = JSON.parse(ev.data);
-      console.log(`Received message :: ${message.sensorData}`);
+      //console.log(`Received message :: ${message.sensorData}`);
       // Upon receiving websocket message then add it to the list of data that we are displaying
-      let newDataArray = [
-        ...data,
-        {
-          id: message.date,
-          sensorData: message.sensorData,
-        },
-      ];
-      console.log(newDataArray);
 
       setData((currentData) => limitData(currentData, message));
-      update(message);
+      console.log(data);
+      //update(data);
     };
     ws.current.onclose = (ev) => {
       console.log("Client socket close!");
     };
 
-    function update(message) {
-      setXTimeSeries((xTimeSeries) => [...xTimeSeries, message.date]);
-      setYValues((yValues) => [...yValues, message.sensorData[0]]);
+    function update(data) {
+      setXTimeSeries(data.map((mes) => mes.id));
+      setYValues(data.map((mes) => mes.sensorData[0]));
     }
 
     //We limit the number of reads to the last 24 reading and drop the last read
@@ -60,6 +53,7 @@ function App() {
       //   console.log("Limit reached, dropping first record!");
       //   currentData.shift();
       // }
+      console.log(message);
       return [
         ...currentData,
         {
@@ -74,12 +68,6 @@ function App() {
       ws.current.close();
     };
   }, []);
-
-  // function update() {
-  //   setXTimeSeries((xTimeSeries) => [...xTimeSeries, Date.now()]);
-  //   setYValues((yValues) => [...yValues, Math.random()]);
-  // }
-  // setTimeout(update, 1000);
 
   useEffect(() => {
     updateSettings((settings) => ({
