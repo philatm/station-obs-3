@@ -34,8 +34,12 @@ function App() {
       //console.log(`Received message :: ${message.sensorData}`);
       // Upon receiving websocket message then add it to the list of data that we are displaying
 
-      setData((currentData) => limitData(currentData, message));
-      console.log(data);
+      setData((currentData) => {
+        const newData = limitData(currentData, message);
+        update(currentData);
+        console.log(newData); // Log the updated data
+        return newData; // Return the updated data to be set in the state
+      });
       //update(data);
     };
     ws.current.onclose = (ev) => {
@@ -44,7 +48,7 @@ function App() {
 
     function update(data) {
       setXTimeSeries(data.map((mes) => mes.id));
-      setYValues(data.map((mes) => mes.sensorData[0]));
+      setYValues(data.map((mes) => mes.sensorData[1]));
     }
 
     //We limit the number of reads to the last 24 reading and drop the last read
