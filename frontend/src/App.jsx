@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import MyPlot from "./MyPlot.jsx";
+import MyPlot from "./components/MyPlot/MyPlot.jsx";
 
 function App() {
   return (

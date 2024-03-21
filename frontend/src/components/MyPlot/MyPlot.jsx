@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Plot from "react-plotly.js";
 
-function PlotImg() {
+function MyPlot() {
   const ws = useRef();
   const [data, setData] = useState([]);
 
@@ -51,7 +51,7 @@ function PlotImg() {
 
     //We update the number of reads
     function updateData(currentData, message) {
-      console.log(message);
+      //console.log(message);
       return [
         ...currentData,
         {
@@ -84,4 +84,4 @@ function PlotImg() {
   );
 }
 
-export default PlotImg;
+export default MyPlot;
