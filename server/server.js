@@ -37,7 +37,7 @@ setInterval(function(){
   let time = new Date();
   let data = [];
   for (let i = 0; i < 10; i++) {
-    data[i] = (Math.random() + i) * 10;  
+    data[i] = (i + Math.random()) * 10;  
   }
   let number = (Math.random()*100) + 1;
   let message = { date: time, sensorData: data};
