@@ -83,17 +83,14 @@ function App() {
         layout={settings.layout}
         config={settings.config}
       />
-      <label for="data-select">Choose a pet:</label>
+      <label htmlFor="range-select">Choose an index: </label>
 
-      <select name="ranges" id="range-select">
-        <option value="">--Please choose an option--</option>
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
+      <select 
+        name="ranges" id="range-select"
+      >
+        {data[0] && data[0].sensorData.map((el, ind) =>
+          <option key={ind} vlaue={ind}>{ind}</option>
+        )}
       </select>
     </div>
   );
