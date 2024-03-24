@@ -5,6 +5,7 @@ import Plot from "react-plotly.js";
 function App() {
   const ws = useRef();
   const [data, setData] = useState([]);
+  const [visiblePos, setVisiblePos] = useState(0);
 
   const [xTimeSeries, setXTimeSeries] = useState([]);
   const [yValues, setYValues] = useState([]);
@@ -47,7 +48,9 @@ function App() {
 
     function updatePlot(data) {
       setXTimeSeries(data.map((mes) => mes.id));
-      setYValues(data.map((mes) => mes.sensorData[0]));
+      const newYValues = data.map((mes) => mes.sensorData[visiblePos]);
+      setYValues(newYValues);
+  
     }
 
     //We update the number of reads
@@ -66,14 +69,14 @@ function App() {
       console.log("Cleaning up! ");
       ws.current.close();
     };
-  }, []);
+  }, [visiblePos]);
 
   useEffect(() => {
     updateSettings((settings) => ({
       ...settings,
       data: [{ ...settings.data[0], x: xTimeSeries, y: yValues }],
     }));
-  }, [xTimeSeries]);
+  }, [xTimeSeries, yValues]);
 
 
   return (
@@ -86,10 +89,15 @@ function App() {
       <label htmlFor="range-select">Choose an index: </label>
 
       <select 
+        value={visiblePos}
         name="ranges" id="range-select"
+        onChange={ev => {
+          setVisiblePos(ev.target.value);
+          
+        }}
       >
         {data[0] && data[0].sensorData.map((el, ind) =>
-          <option key={ind} vlaue={ind}>{ind}</option>
+          <option key={ind} value={ind}>{ind}</option>
         )}
       </select>
     </div>
