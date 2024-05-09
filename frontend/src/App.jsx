@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="main">
       <MyPlot />
-      <label for="data-select">Choose a pet:</label>
+      <label htmlFor="data-select">Choose a pet:</label>
 
       <select name="ranges" id="range-select">
         <option value="">--Please choose an option--</option>

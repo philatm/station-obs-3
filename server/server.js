@@ -33,7 +33,7 @@ let port = 5000;
 
 
 // faker data
-setInterval(function(){ 
+setInterval(() => { 
   let time = new Date();
   let data = [];
   for (let i = 0; i < 10; i++) {
