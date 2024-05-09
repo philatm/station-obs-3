@@ -12,7 +12,7 @@ const plotSettings = {
 };
 
 function MyPlot() {
-  const ws = useRef();
+  const wsRef = useRef();
   const [serverData, setServerData] = useState([]);
 
   const plotData = [
@@ -27,21 +27,21 @@ function MyPlot() {
 
   useEffect(() => {
     //Send request to our websocket server using the "/request" path
-    ws.current = new WebSocket("ws://localhost:8080/request");
-    ws.current.onmessage = (ev) => {
+    wsRef.current = new WebSocket("ws://localhost:8080/request");
+    wsRef.current.onmessage = (ev) => {
       const message = JSON.parse(ev.data);
       //console.log(`Received message :: ${message.sensorData}`);
       // Upon receiving websocket message then add it to the list of data that we are displaying
 
       setServerData((prevServerData) => [...prevServerData, message]); // Return the updated data to be set in the state
     };
-    ws.current.onclose = (ev) => {
+    wsRef.current.onclose = (ev) => {
       console.log("Client socket close!");
     };
 
     return () => {
       console.log("Cleaning up! ");
-      ws.current.close();
+      wsRef.current.close();
     };
   }, []);
 
