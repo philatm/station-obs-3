@@ -5,7 +5,7 @@ const plotSettings = {
   layout: {
     width: 720,
     height: 480,
-    title: "A Fancy Plot",
+    title: "A Plot",
   },
   frames: [],
   config: { scrollZoom: true },
@@ -14,11 +14,12 @@ const plotSettings = {
 function MyPlot() {
   const wsRef = useRef();
   const [serverData, setServerData] = useState([]);
+  const [range, setRange] = useState(0);
 
   const plotData = [
     {
       x: serverData.map((sd) => sd.date),
-      y: serverData.map((sd) => sd.sensorData[0]),
+      y: serverData.map((sd) => sd.sensorData[range]),
       type: "scatter",
       mode: "markers",
       marker: { color: "red" },
@@ -52,6 +53,27 @@ function MyPlot() {
         layout={plotSettings.layout}
         config={plotSettings.config}
       />
+      <hr></hr>
+      <label htmlFor="ranges">Choose a pet:</label>
+
+      <select
+        name="ranges"
+        id="range-select"
+        onChange={(ev) => setRange(ev.target.value)}
+      >
+        <option value="">--Please choose an option--</option>
+        {serverData[0] &&
+          serverData[0].sensorData.map((val, ind) => (
+            <option value={ind}>{ind}</option>
+          ))}
+        {/*<option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>*/}
+      </select>
     </div>
   );
 }

@@ -5,6 +5,7 @@ function App() {
   return (
     <div className="main">
       <MyPlot />
+      {/*
       <label htmlFor="data-select">Choose a pet:</label>
 
       <select name="ranges" id="range-select">
@@ -17,6 +18,7 @@ function App() {
         <option value="5">5</option>
         <option value="6">6</option>
       </select>
+  */}
     </div>
   );
 }
