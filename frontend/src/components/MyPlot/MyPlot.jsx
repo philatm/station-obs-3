@@ -31,10 +31,14 @@ function MyPlot() {
     wsRef.current = new WebSocket("ws://localhost:8080/request");
     wsRef.current.onmessage = (ev) => {
       const message = JSON.parse(ev.data);
-      //console.log(`Received message :: ${message.sensorData}`);
+      console.log(Array.isArray(message));
+      //console.log(`Received message :: ${message}`);
       // Upon receiving websocket message then add it to the list of data that we are displaying
-
-      setServerData((prevServerData) => [...prevServerData, message]); // Return the updated data to be set in the state
+      if (!Array.isArray(message)) {
+        setServerData((prevServerData) => [...prevServerData, message]); // Return the updated data to be set in the state
+      } else {
+        setServerData(message);
+      }
     };
     wsRef.current.onclose = (ev) => {
       console.log("Client socket close!");
@@ -54,7 +58,7 @@ function MyPlot() {
         config={plotSettings.config}
       />
       <hr></hr>
-      <label htmlFor="ranges">Choose a pet:</label>
+      <label htmlFor="range-select">Choose a range:</label>
 
       <select
         name="ranges"
@@ -64,8 +68,11 @@ function MyPlot() {
         <option value="">--Please choose an option--</option>
         {serverData[0] &&
           serverData[0].sensorData.map((val, ind) => (
-            <option value={ind}>{ind}</option>
+            <option key={ind} value={ind}>
+              {ind}
+            </option>
           ))}
+        a
         {/*<option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>

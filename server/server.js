@@ -5,9 +5,10 @@ import { Socket } from 'net';
 
 
 //connection to pump
-let ip = '192.168.244.233';
-let port = 5000;
+const ip = '192.168.244.233';
+const port = 5000;
 
+let arrayMessage = [];
 // Get data from remote pump
 // let client = new Socket();
 // client.connect(port, ip, function() {
@@ -40,7 +41,8 @@ setInterval(() => {
     data[i] = (i + Math.random()) * 10;  
   }
   let number = (Math.random()*100) + 1;
-  let message = { date: time, sensorData: data};
+  let message = { date: time, sensorData: data}; 
+  arrayMessage.push(message);
   const jsonMessage = JSON.stringify(message);
   sendMessage(jsonMessage); 
 }, 1000);
@@ -61,6 +63,8 @@ wss.on("connection", function connection(socket) {
     socket: socket,
     connectionDate: Date.now(),
   };
+  const jsonMessage = JSON.stringify(arrayMessage);
+  socket.send(jsonMessage);
   console.log("Adding to set");
   users.add(userRef);
 });
