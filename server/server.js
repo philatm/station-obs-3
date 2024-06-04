@@ -9,6 +9,7 @@ const ip = '192.168.244.233';
 const port = 5000;
 
 let arrayMessage = [];
+let intervalId = null;
 // Get data from remote pump
 // let client = new Socket();
 // client.connect(port, ip, function() {
@@ -34,7 +35,8 @@ let arrayMessage = [];
 
 
 // faker data
-setInterval(() => { 
+const generateData = () => {
+  
   let time = new Date();
   let data = [];
   for (let i = 0; i < 10; i++) {
@@ -45,7 +47,8 @@ setInterval(() => {
   arrayMessage.push(message);
   const jsonMessage = JSON.stringify(message);
   sendMessage(jsonMessage); 
-}, 1000);
+  
+}
 // Create the https server
 const server = createServer();
 // Create instance of the websocket server
@@ -67,6 +70,26 @@ wss.on("connection", function connection(socket) {
   socket.send(jsonMessage);
   console.log("Adding to set");
   users.add(userRef);
+
+  socket.on('close', () => {
+    users.delete(userRef);
+  });
+
+  socket.on('message', (message) => {
+    const data = JSON.parse(message);
+    if (data.action === 'start') {
+      if (!intervalId) {
+        intervalId = setInterval(generateData, 1000);
+        console.log("Data generation started");
+      }
+    } else if (data.action === "stop") {
+      if(intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        console.log("Data generation stoped")
+      }
+    }
+  });
 });
 
 /*

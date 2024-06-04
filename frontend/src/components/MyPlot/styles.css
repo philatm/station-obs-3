@@ -1,0 +1,22 @@
+.plot-container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto;
+}
+
+.plot-div {
+  grid-column: 1;
+}
+
+.button-container {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 20px; /* Optional: Add margin for spacing */
+}
+
+.button-container button,
+.button-container select {
+  margin-bottom: 10px;
+}

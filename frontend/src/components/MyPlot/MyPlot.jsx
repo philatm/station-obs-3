@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Plot from "react-plotly.js";
-
+import './styles.css';
 const plotSettings = {
   layout: {
     width: 720,
@@ -15,6 +15,7 @@ function MyPlot() {
   const wsRef = useRef();
   const [serverData, setServerData] = useState([]);
   const [range, setRange] = useState(0);
+  const [isConnected, setIsConnected] = useState(false);
 
   const plotData = [
     {
@@ -28,7 +29,7 @@ function MyPlot() {
 
   useEffect(() => {
     //Send request to our websocket server using the "/request" path
-    wsRef.current = new WebSocket("ws://localhost:8080/request");
+    {/*wsRef.current = new WebSocket("ws://localhost:8080/request");
     wsRef.current.onmessage = (ev) => {
       const message = JSON.parse(ev.data);
       console.log(Array.isArray(message));
@@ -42,13 +43,49 @@ function MyPlot() {
     };
     wsRef.current.onclose = (ev) => {
       console.log("Client socket close!");
-    };
+    };*/}
 
     return () => {
-      console.log("Cleaning up! ");
-      wsRef.current.close();
+      return () => {
+        if (wsRef.current) {
+          wsRef.current.close();
+          console.log("Cleaning up WebSocket connection");
+        }
+      };
     };
   }, []);
+
+  const startDataGeneration = () => {
+    if (isConnected) return; // Prevent multiple connections
+
+    wsRef.current = new WebSocket("ws://localhost:8080/request");
+
+    wsRef.current.onopen = () => {
+      setIsConnected(true);
+      wsRef.current.send(JSON.stringify({ action: 'start' }));
+    };
+
+    wsRef.current.onmessage = (ev) => {
+      const message = JSON.parse(ev.data);
+      if (!Array.isArray(message)) {
+        setServerData((prevServerData) => [...prevServerData, message]);
+      } else {
+        setServerData(message);
+      }
+    };
+
+    wsRef.current.onclose = () => {
+      console.log("Client socket close!");
+      setIsConnected(false);
+    };
+  };
+
+  const stopDataGeneration = () => {
+    if (!isConnected || !wsRef.current) return;
+
+    wsRef.current.send(JSON.stringify({ action: 'stop' }));
+    wsRef.current.close();
+  };
 
   return (
     <div className="plot_div">
@@ -57,9 +94,11 @@ function MyPlot() {
         layout={plotSettings.layout}
         config={plotSettings.config}
       />
-      <hr></hr>
+      <div className="button-container">
+        <button onClick={startDataGeneration}>Start Data Generation</button>
+        <button onClick={stopDataGeneration}>Stop Data Generation</button>
+      </div>
       <label htmlFor="range-select">Choose a range:</label>
-
       <select
         name="ranges"
         id="range-select"
