@@ -86,6 +86,7 @@ wss.on("connection", function connection(socket) {
       if(intervalId) {
         clearInterval(intervalId);
         intervalId = null;
+        arrayMessage = [];
         console.log("Data generation stoped")
       }
     }
