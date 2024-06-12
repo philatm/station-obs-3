@@ -1,22 +1,50 @@
-.plot-container {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto;
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.btn:active {
+  border: 3px solid black;
+}
+.btn-start {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
 }
 
-.plot-div {
-  grid-column: 1;
+.btn-start:hover {
+  background-color: #165184
 }
 
-.button-container {
-  grid-column: 2;
+.btn-stop {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.btn-stop:hover {
+  background-color: #b92823;
+}
+
+.graphs-container {
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  margin-top: 20px; /* Optional: Add margin for spacing */
-}
-
-.button-container button,
-.button-container select {
-  margin-bottom: 10px;
+  gap: 4px;
 }

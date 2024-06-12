@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import Plot from "react-plotly.js";
-import './styles.css';
+import "./styles.css";
+import GraphOptions from "../GraphOptions/GraphOptions";
+
 const plotSettings = {
   layout: {
     width: 720,
@@ -13,23 +15,55 @@ const plotSettings = {
 
 function MyPlot() {
   const wsRef = useRef();
+  const idRef = useRef(0);
   const [serverData, setServerData] = useState([]);
-  const [range, setRange] = useState(0);
+  const [graphs, setGraphs] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
 
-  const plotData = [
-    {
-      x: serverData.map((sd) => sd.date),
-      y: serverData.map((sd) => sd.sensorData[range]),
-      type: "scatter",
-      mode: "markers",
-      marker: { color: "red" },
-    },
-  ];
+  const optionsCount = serverData[0] ? serverData[0].sensorData.length : 0;
 
+  // const plotData = [
+  //   {
+  //     x: serverData.map((sd) => sd.date),
+  //     y: serverData.map((sd) => sd.sensorData[range]),
+  //     type: "scatter",
+  //     mode: "markers",
+  //     marker: { color: "red" },
+  //   },
+  // ];
+
+  const plotData = graphs.map((graph) => ({
+    x: serverData.map((sd) => sd.date),
+    y: serverData.map((sd) => sd.sensorData[graph.index]),
+    type: "scatter",
+    mode: "markers",
+    marker: { color: graph.color },
+  }));
+
+  const addGraphOption = () => {
+    const newGraph = {
+      id: idRef.current++,
+      index: 0,
+      color: "red",
+      //unit: "",
+    };
+    setGraphs([...graphs, newGraph]);
+  };
+
+  const editGraph = (graph) => {
+    const newGraphs = graphs.map((gr) => {
+      if (gr.id === graph.id) {
+        return graph;
+      } else {
+        return gr;
+      }
+    });
+    setGraphs(newGraphs);
+  };
   useEffect(() => {
     //Send request to our websocket server using the "/request" path
-    {/*wsRef.current = new WebSocket("ws://localhost:8080/request");
+    {
+      /*wsRef.current = new WebSocket("ws://localhost:8080/request");
     wsRef.current.onmessage = (ev) => {
       const message = JSON.parse(ev.data);
       console.log(Array.isArray(message));
@@ -43,15 +77,14 @@ function MyPlot() {
     };
     wsRef.current.onclose = (ev) => {
       console.log("Client socket close!");
-    };*/}
+    };*/
+    }
 
     return () => {
-      return () => {
-        if (wsRef.current) {
-          wsRef.current.close();
-          console.log("Cleaning up WebSocket connection");
-        }
-      };
+      if (wsRef.current) {
+        wsRef.current.close();
+        console.log("Cleaning up WebSocket connection");
+      }
     };
   }, []);
 
@@ -62,7 +95,7 @@ function MyPlot() {
 
     wsRef.current.onopen = () => {
       setIsConnected(true);
-      wsRef.current.send(JSON.stringify({ action: 'start' }));
+      wsRef.current.send(JSON.stringify({ action: "start" }));
     };
 
     wsRef.current.onmessage = (ev) => {
@@ -83,7 +116,7 @@ function MyPlot() {
   const stopDataGeneration = () => {
     if (!isConnected || !wsRef.current) return;
 
-    wsRef.current.send(JSON.stringify({ action: 'stop' }));
+    wsRef.current.send(JSON.stringify({ action: "stop" }));
     wsRef.current.close();
   };
 
@@ -94,32 +127,27 @@ function MyPlot() {
         layout={plotSettings.layout}
         config={plotSettings.config}
       />
+
       <div className="button-container">
-        <button onClick={startDataGeneration}>Start Data Generation</button>
-        <button onClick={stopDataGeneration}>Stop Data Generation</button>
+        <button className="btn btn-start" onClick={startDataGeneration}>
+          Start Data Generation
+        </button>
+        &nbsp; &nbsp; &nbsp;
+        <button className="btn btn-stop" onClick={stopDataGeneration}>
+          Stop Data Generation
+        </button>
       </div>
-      <label htmlFor="range-select">Choose a range:</label>
-      <select
-        name="ranges"
-        id="range-select"
-        onChange={(ev) => setRange(ev.target.value)}
-      >
-        <option value="">--Please choose an option--</option>
-        {serverData[0] &&
-          serverData[0].sensorData.map((val, ind) => (
-            <option key={ind} value={ind}>
-              {ind}
-            </option>
-          ))}
-        a
-        {/*<option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>*/}
-      </select>
+      <button onClick={addGraphOption}>+</button>
+      <div className="graphs-container">
+        {graphs.map((graph) => (
+          <GraphOptions
+            key={graph.id}
+            graph={graph}
+            editGraph={editGraph}
+            optionsCount={optionsCount}
+          />
+        ))}
+      </div>
     </div>
   );
 }
