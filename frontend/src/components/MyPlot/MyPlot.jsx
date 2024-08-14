@@ -20,7 +20,7 @@ function MyPlot() {
   const [graphs, setGraphs] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
 
-  const optionsCount = serverData[0] ? serverData[0].sensorData.length : 0;
+  const graphDataCount = serverData[0] ? serverData[0].sensorData.length : 0;
 
   // const plotData = [
   //   {
@@ -37,6 +37,7 @@ function MyPlot() {
     y: serverData.map((sd) => sd.sensorData[graph.index]),
     type: "scatter",
     mode: "markers",
+    name: graph.name,
     marker: { color: graph.color },
   }));
 
@@ -44,7 +45,8 @@ function MyPlot() {
     const newGraph = {
       id: idRef.current++,
       index: 0,
-      color: "red",
+      color: "black",
+      // name: "Hello",
       //unit: "",
     };
     setGraphs([...graphs, newGraph]);
@@ -60,33 +62,6 @@ function MyPlot() {
     });
     setGraphs(newGraphs);
   };
-  useEffect(() => {
-    //Send request to our websocket server using the "/request" path
-    {
-      /*wsRef.current = new WebSocket("ws://localhost:8080/request");
-    wsRef.current.onmessage = (ev) => {
-      const message = JSON.parse(ev.data);
-      console.log(Array.isArray(message));
-      //console.log(`Received message :: ${message}`);
-      // Upon receiving websocket message then add it to the list of data that we are displaying
-      if (!Array.isArray(message)) {
-        setServerData((prevServerData) => [...prevServerData, message]); // Return the updated data to be set in the state
-      } else {
-        setServerData(message);
-      }
-    };
-    wsRef.current.onclose = (ev) => {
-      console.log("Client socket close!");
-    };*/
-    }
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-        console.log("Cleaning up WebSocket connection");
-      }
-    };
-  }, []);
 
   const startDataGeneration = () => {
     if (isConnected) return; // Prevent multiple connections
@@ -120,6 +95,34 @@ function MyPlot() {
     wsRef.current.close();
   };
 
+  useEffect(() => {
+    //Send request to our websocket server using the "/request" path
+    {
+      /*wsRef.current = new WebSocket("ws://localhost:8080/request");
+    wsRef.current.onmessage = (ev) => {
+      const message = JSON.parse(ev.data);
+      console.log(Array.isArray(message));
+      //console.log(`Received message :: ${message}`);
+      // Upon receiving websocket message then add it to the list of data that we are displaying
+      if (!Array.isArray(message)) {
+        setServerData((prevServerData) => [...prevServerData, message]); // Return the updated data to be set in the state
+      } else {
+        setServerData(message);
+      }
+    };
+    wsRef.current.onclose = (ev) => {
+      console.log("Client socket close!");
+    };*/
+    }
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+        console.log("Cleaning up WebSocket connection");
+      }
+    };
+  }, []);
+
   return (
     <div className="plot_div">
       <Plot
@@ -144,7 +147,7 @@ function MyPlot() {
             key={graph.id}
             graph={graph}
             editGraph={editGraph}
-            optionsCount={optionsCount}
+            graphDataCount={graphDataCount}
           />
         ))}
       </div>
