@@ -5,7 +5,7 @@ const GraphOptions = ({ graph, editGraph, graphDataCount }) => {
   const { id, index, color, name } = graph;
   const arr = Array.from(Array(graphDataCount).keys());
   return (
-    <div id={`graph-${id}-options`} class="graph-options">
+    <div id={`graph-${id}-options`} className="graph-options">
       <div>
         <label htmlFor={`graph-index-${id}-select`}>Choose a range:</label>
         <select
@@ -35,6 +35,19 @@ const GraphOptions = ({ graph, editGraph, graphDataCount }) => {
           id={`graph-index-${id}-color`}
           onChange={(ev) => editGraph({ ...graph, color: ev.target.value })}
         />
+      </div>{" "}
+      <div>
+        <label htmlFor={`graph-index-${id}-unit`}>Choose a unit:</label>
+        <select
+          type="select"
+          id={`graph-index-${id}-unit`}
+          onChange={(ev) => editGraph({ ...graph, yaxis: ev.target.value })}
+        >
+          <option value="y">Давление</option>
+          <option value="y2">Расход</option>
+          <option value="y3">Концентрация</option>
+          <option value="y4">Температура</option>
+        </select>
       </div>
     </div>
   );

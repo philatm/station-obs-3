@@ -5,9 +5,41 @@ import GraphOptions from "../GraphOptions/GraphOptions";
 
 const plotSettings = {
   layout: {
-    width: 720,
+    width: 1400,
     height: 480,
     title: "A Plot",
+    xaxis: { domain: [0.05, 0.95] },
+    yaxis: {
+      title: "Давление, атм",
+      titlefont: { color: "#1f77b4" },
+      tickfont: { color: "#1f77b4" },
+    },
+    yaxis2: {
+      title: "Расход, куб/мин",
+      titlefont: { color: "#ff7f0e" },
+      tickfont: { color: "#ff7f0e" },
+      anchor: "free",
+      overlaying: "y",
+      side: "left",
+      position: 0,
+    },
+    yaxis3: {
+      title: "Концентрация, кг/м3",
+      titlefont: { color: "#d62728" },
+      tickfont: { color: "#d62728" },
+      anchor: "x",
+      overlaying: "y",
+      side: "right",
+    },
+    yaxis4: {
+      title: "Температура, °C",
+      titlefont: { color: "#9467bd" },
+      tickfont: { color: "#9467bd" },
+      anchor: "free",
+      overlaying: "y",
+      side: "right",
+      position: 1,
+    },
   },
   frames: [],
   config: { scrollZoom: true },
@@ -38,6 +70,7 @@ function MyPlot() {
     type: "scatter",
     mode: "markers",
     name: graph.name,
+    yaxis: graph.yaxis,
     marker: { color: graph.color },
   }));
 
@@ -46,6 +79,7 @@ function MyPlot() {
       id: idRef.current++,
       index: 0,
       color: "black",
+      yaxis: "y",
       // name: "Hello",
       //unit: "",
     };
