@@ -45,11 +45,35 @@ const plotSettings = {
   config: { scrollZoom: true },
 };
 
+const InitialGraphs = [
+  {
+    id: 0,
+    index: 2,
+    color: "#00ff00",
+    yaxis: "y3",
+    name: "Концентрация чистого",
+  },
+  {
+    id: 1,
+    index: 8,
+    color: "#ff0000",
+    yaxis: "y",
+    name: "Давление затруба",
+  },
+  {
+    id: 2,
+    index: 6,
+    color: "#0000ff",
+    yaxis: "y3",
+    name: "Концентрация чистого",
+  },
+];
+
 function MyPlot() {
   const wsRef = useRef();
   const idRef = useRef(0);
   const [serverData, setServerData] = useState([]);
-  const [graphs, setGraphs] = useState([]);
+  const [graphs, setGraphs] = useState(InitialGraphs);
   const [isConnected, setIsConnected] = useState(false);
 
   const graphDataCount = serverData[0] ? serverData[0].sensorData.length : 0;
